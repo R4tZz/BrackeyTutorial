@@ -1,10 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://dg4qntm2jpasx"]
+[gd_scene load_steps=15 format=3 uid="uid://dg4qntm2jpasx"]
 
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_2hnmw"]
 [ext_resource type="Texture2D" uid="uid://cwvuvlkqgv7f0" path="res://assets/sprites/world_tileset.png" id="1_sq1xr"]
 [ext_resource type="PackedScene" uid="uid://cw3gr6fww38qk" path="res://scenes/player.tscn" id="1_vkjof"]
 [ext_resource type="PackedScene" uid="uid://ddef2m035ic" path="res://scenes/platform.tscn" id="3_n2svr"]
 [ext_resource type="PackedScene" uid="uid://bb3ak5o7tnf1" path="res://scenes/coin.tscn" id="4_ohay0"]
 [ext_resource type="PackedScene" uid="uid://0fai5swsc5nx" path="res://scenes/killzone.tscn" id="5_57e32"]
+[ext_resource type="PackedScene" uid="uid://dvlrpthdp0hv1" path="res://scenes/slime.tscn" id="6_c0cn0"]
+[ext_resource type="FontFile" uid="uid://qcmxukjg1om7" path="res://assets/fonts/PixelOperator8.ttf" id="7_uhoyr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cqc52"]
 texture = ExtResource("1_sq1xr")
@@ -412,6 +415,21 @@ sources/0 = SubResource("TileSetAtlasSource_cqc52")
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_s6wvm"]
 
+[sub_resource type="Animation" id="Animation_a1h50"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(533, 37)]
+}
+
 [sub_resource type="Animation" id="Animation_76s6x"]
 resource_name = "move"
 length = 1.5
@@ -429,21 +447,6 @@ tracks/0/keys = {
 "values": [Vector2(533, 37), Vector2(612, 37)]
 }
 
-[sub_resource type="Animation" id="Animation_a1h50"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(533, 37)]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_nescu"]
 _data = {
 "RESET": SubResource("Animation_a1h50"),
@@ -451,6 +454,10 @@ _data = {
 }
 
 [node name="Game" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_2hnmw")
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2(-12, 0)
@@ -463,7 +470,7 @@ layer_1/tile_data = PackedInt32Array(589819, 196608, 1, 655355, 0, 1, 655356, 0,
 
 [node name="Player" parent="." instance=ExtResource("1_vkjof")]
 z_index = 5
-position = Vector2(-99, 38)
+position = Vector2(-67, 84)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(0, -5)
@@ -509,3 +516,15 @@ libraries = {
 "": SubResource("AnimationLibrary_nescu")
 }
 autoplay = "move"
+
+[node name="Slime" parent="." instance=ExtResource("6_c0cn0")]
+position = Vector2(1100, 112)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -26.0
+offset_top = 83.0
+offset_right = 156.0
+offset_bottom = 118.0
+theme_override_fonts/font = ExtResource("7_uhoyr")
+theme_override_font_sizes/font_size = 8
+text = "Space to jump!"

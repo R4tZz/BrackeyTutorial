@@ -172,7 +172,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_esm4v")
 }],
-"loop": false,
+"loop": true,
 "name": &"Roll",
 "speed": 10.0
 }, {
@@ -240,7 +240,7 @@ script = ExtResource("1_5iapt")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
 sprite_frames = SubResource("SpriteFrames_c5vlq")
-animation = &"Roll"
+animation = &"Run"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -5)

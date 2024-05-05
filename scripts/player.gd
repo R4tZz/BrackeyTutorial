@@ -2,15 +2,18 @@ extends CharacterBody2D
 
 const SPEED = 130.0
 const JUMP_VELOCITY = -300.0
-
+const COYOTE_TIME = 0.1
 
 enum state {IDLE, RUN, ROLL, JUMP, FALL}
 var player_state = state.IDLE
+var number_jump = 1
+var jump_available = false
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var jump = $Jump
+@onready var coyote_timer = $CoyoteTimer
 
 func update_animation():
 	if velocity.x < 0:
@@ -28,24 +31,26 @@ func update_animation():
 			animated_sprite.play("Jump")
 		state.ROLL:
 			animated_sprite.play("Roll")
+		state.FALL:
+			animated_sprite.play("Fall")
 
 func _physics_process(delta):
-	# Add the gravity.
-	
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
-	# Handle jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and number_jump > 0 and jump_available:
 		velocity.y = JUMP_VELOCITY
 		jump.play()
-		#player_state = state.JUMP
+		number_jump = number_jump - 1
+		if number_jump == 0:
+			jump_available = false
 		
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction = Input.get_axis("move_left", "move_right")
 	
 	if is_on_floor():
+		coyote_timer.stop()
+		number_jump = 1
+		jump_available = true
 		if direction == 0 and player_state != state.ROLL:
 			player_state = state.IDLE
 		elif Input.is_action_just_pressed("roll") and direction != 0:
@@ -53,8 +58,13 @@ func _physics_process(delta):
 		elif direction != 0 and player_state != state.ROLL:
 			player_state = state.RUN
 	else:
-		#animated_sprite.play("Jump")
-		player_state = state.JUMP
+		if velocity.y < 0:
+			player_state = state.JUMP
+		else:
+			player_state = state.FALL
+			if jump_available:
+				if coyote_timer.is_stopped():
+					coyote_timer.start(COYOTE_TIME)
 	
 	if direction:
 		velocity.x = direction * SPEED
@@ -64,3 +74,6 @@ func _physics_process(delta):
 	move_and_slide()
 	update_animation()
 
+
+func _on_coyote_timer_timeout():
+	jump_available = false
